@@ -6,7 +6,6 @@
 use common::hlt_loop;
 use common::uefi;
 use common::utf16;
-use core::panic::PanicInfo;
 
 #[no_mangle]
 pub extern "efiapi" fn efi_main(
@@ -14,10 +13,5 @@ pub extern "efiapi" fn efi_main(
     system_table: uefi::SystemTable,
 ) -> uefi::Status {
     system_table.con_out().output_string(&utf16!("hello!\0"));
-    hlt_loop()
-}
-
-#[panic_handler]
-fn panic(_panic: &PanicInfo<'_>) -> ! {
     hlt_loop()
 }
