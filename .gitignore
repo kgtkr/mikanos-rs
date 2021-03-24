@@ -1,0 +1,6 @@
+/target
+disk.img
+/disk
+/devenv/*
+!/devenv/.gitkeep
+/ovmf
