@@ -1,6 +1,7 @@
 #![no_std]
 #![feature(abi_efiapi)]
 #![feature(asm)]
+#![feature(ptr_internals)]
 
 mod hlt;
 pub use hlt::*;
