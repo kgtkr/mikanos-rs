@@ -2,5 +2,6 @@
 
 members = [
     "efi-hello",
-    "common"
+    "common",
+    "uefi"
 ]

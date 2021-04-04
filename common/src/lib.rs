@@ -5,7 +5,6 @@
 
 mod hlt;
 pub use hlt::*;
-pub mod uefi;
 
 use core::panic::PanicInfo;
 

@@ -44,6 +44,6 @@ pub use utf16_literal::utf16 as utf16_raw;
 #[macro_export]
 macro_rules! utf16 {
     ($x:tt) => {{
-        $crate::uefi::UTF16Str::from_utf16($crate::uefi::utf16_raw!($x)).unwrap()
+        $crate::UTF16Str::from_utf16($crate::utf16_raw!($x)).unwrap()
     }};
 }

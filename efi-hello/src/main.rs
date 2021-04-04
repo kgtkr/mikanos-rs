@@ -4,8 +4,8 @@
 #![feature(asm)]
 
 use common::hlt_loop;
-use common::uefi;
-use common::utf16;
+use uefi;
+use uefi::utf16;
 
 #[no_mangle]
 pub extern "efiapi" fn efi_main(

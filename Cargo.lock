@@ -5,15 +5,20 @@ version = 3
 [[package]]
 name = "common"
 version = "0.1.0"
-dependencies = [
- "utf16_literal",
-]
 
 [[package]]
 name = "efi-hello"
 version = "0.1.0"
 dependencies = [
  "common",
+ "uefi",
+]
+
+[[package]]
+name = "uefi"
+version = "0.1.0"
+dependencies = [
+ "utf16_literal",
 ]
 
 [[package]]

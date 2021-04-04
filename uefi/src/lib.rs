@@ -1,4 +1,7 @@
-use core::{ffi::c_void, ptr::NonNull};
+#![no_std]
+#![feature(abi_efiapi)]
+#![feature(asm)]
+#![feature(ptr_internals)]
 
 mod status;
 pub use status::*;
