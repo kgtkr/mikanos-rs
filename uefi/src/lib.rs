@@ -2,6 +2,7 @@
 #![feature(abi_efiapi)]
 #![feature(asm)]
 #![feature(ptr_internals)]
+#![feature(maybe_uninit_slice)]
 
 mod status;
 pub use status::*;

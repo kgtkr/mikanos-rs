@@ -8,6 +8,14 @@ pub type PhysicalAddress = u64;
 
 pub type VirtualAddress = u64;
 
+fn maybe_uninit_to_non_null<T>(x: &mut MaybeUninit<T>) -> NonNull<T> {
+    unsafe { NonNull::new_unchecked(x.as_mut_ptr()) }
+}
+
+fn slice_maybe_uninit_to_non_null<T>(x: &mut [MaybeUninit<T>]) -> NonNull<T> {
+    unsafe { NonNull::new_unchecked(MaybeUninit::slice_as_mut_ptr(x)) }
+}
+
 #[repr(C)]
 pub struct MemoryDescriptor {
     type_: u32,
@@ -23,10 +31,10 @@ pub struct BootServices {
     dummy1: [usize; 4],
     get_memory_map: unsafe extern "efiapi" fn(
         memory_map_size: NonNull<usize>,
-        memory_map: NonNull<[MaybeUninit<u8>]>,
-        map_key: NonNull<MaybeUninit<usize>>,
-        descriptor_size: NonNull<MaybeUninit<usize>>,
-        descriptor_version: NonNull<MaybeUninit<u32>>,
+        memory_map: NonNull<u8>,
+        map_key: NonNull<usize>,
+        descriptor_size: NonNull<usize>,
+        descriptor_version: NonNull<u32>,
     ) -> Status,
     dummy2: [usize; 27],
     open_protocol: unsafe extern "efiapi" fn(
@@ -44,7 +52,7 @@ pub struct BootServices {
 pub struct MemoryMap<'a> {
     map_key: usize,
     memory_map_size: usize,
-    memory_map: NonNull<MaybeUninit<MemoryDescriptor>>,
+    memory_map: NonNull<MemoryDescriptor>,
     descriptor_size: usize,
     descriptor_version: u32,
     phantom: PhantomData<&'a ()>,
@@ -81,7 +89,7 @@ impl<'a> MemoryMap<'a> {
 }
 
 pub struct MemoryMapIter<'a> {
-    ptr: NonNull<MaybeUninit<MemoryDescriptor>>,
+    ptr: NonNull<MemoryDescriptor>,
     len: usize,
     descriptor_size: usize,
     phantom: PhantomData<&'a ()>,
@@ -95,7 +103,7 @@ impl<'a> Iterator for MemoryMapIter<'a> {
             None
         } else {
             unsafe {
-                let result = &*(self.ptr.as_ptr() as *const MemoryDescriptor);
+                let result = &*self.ptr.as_ptr();
                 self.len -= 1;
                 self.ptr = NonNull::new_unchecked(
                     (self.ptr.as_ptr() as usize + self.descriptor_size) as *mut _,
@@ -123,10 +131,10 @@ impl BootServices {
         unsafe {
             let status = (self.get_memory_map)(
                 (&mut memory_map_size).into(),
-                memory_map.into(),
-                (&mut map_key).into(),
-                (&mut descriptor_size).into(),
-                (&mut descriptor_version).into(),
+                slice_maybe_uninit_to_non_null(memory_map),
+                maybe_uninit_to_non_null(&mut map_key),
+                maybe_uninit_to_non_null(&mut descriptor_size),
+                maybe_uninit_to_non_null(&mut descriptor_version),
             );
 
             match status {
